@@ -1,36 +1,128 @@
+//! #Color
+//!
+//! A master class for color manipulation
+
 pub mod color {
     use crate::instances::colors_info::colors_info::*;
 
+    /// The color type enumeration
     #[derive(Debug)]
     #[derive(PartialEq)]
     pub enum ColorType {
+        /// The target color is 0 - 15
         Color16,
+        /// The target color is 0 - 255
         Color255,
+        /// The target color is a true color
         ColorTrue,
     }
 
+    /// The structure for color information
     pub struct ColorFields {
+        /// Plain sequence that describes only the color sequence
         pub plain_sequence         : String,
+        /// Same as above, but enclosed
         pub plain_sequence_enclosed: String,
+        /// VT sequence string to set the foreground color of the console to the parsed color
         pub vt_sequence_foreground : String,
+        /// VT sequence string tk set the background color of the console to the parsed color
         pub vt_sequence_background : String,
+        /// The red color level
         pub r                      : u8,
+        /// The green color level
         pub g                      : u8,
+        /// The blue color level
         pub b                      : u8,
+        /// The hexadecimal representation of the color. Used in HTML.
         pub hex                    : String,
+        /// The color type
         pub color_type             : ColorType,
     }
     
+    /// Makes a color structure from the RGB values
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use colorseq::instances::color::*;
+    /// let escape: char = char::from_u32(0x1b).unwrap();
+    /// let result = color::make_color_from_rgb(64, 128, 255);
+    /// assert_eq!(result.plain_sequence, "64;128;255");
+    /// assert_eq!(result.plain_sequence_enclosed, "\"64;128;255\"");
+    /// assert_eq!(result.vt_sequence_foreground, format!("{escape}[38;2;64;128;255m"));
+    /// assert_eq!(result.vt_sequence_background, format!("{escape}[48;2;64;128;255m"));
+    /// assert_eq!(result.r, 64);
+    /// assert_eq!(result.g, 128);
+    /// assert_eq!(result.b, 255);
+    /// assert_eq!(result.hex, "#4080FF");
+    /// assert_eq!(result.color_type, color::ColorType::ColorTrue);
+    /// ```
     pub fn make_color_from_rgb(r: u8, g: u8, b: u8) -> ColorFields {
         let specifier = format!("{};{};{}", r, g, b);
         return make_color_from_specifier(specifier);
     }
 
+    /// Makes a color structure from the color number according to the console data
+    ///
+    /// # Examples
+    ///
+    /// To use this function on color number larger than or equal to 16:
+    ///
+    /// ```
+    /// use colorseq::instances::color::*;
+    /// let escape: char = char::from_u32(0x1b).unwrap();
+    /// let result = color::make_color_from_num(40);
+    /// assert_eq!(result.plain_sequence, "0;215;0");
+    /// assert_eq!(result.plain_sequence_enclosed, "\"0;215;0\"");
+    /// assert_eq!(result.vt_sequence_foreground, format!("{escape}[38;2;0;215;0m"));
+    /// assert_eq!(result.vt_sequence_background, format!("{escape}[48;2;0;215;0m"));
+    /// assert_eq!(result.r, 0);
+    /// assert_eq!(result.g, 215);
+    /// assert_eq!(result.b, 0);
+    /// assert_eq!(result.hex, "#00D700");
+    /// assert_eq!(result.color_type, color::ColorType::Color255);
+    /// ```
+    ///
+    /// To use this function on color number smaller than 16:
+    ///
+    /// ```
+    /// use colorseq::instances::color::*;
+    /// let escape: char = char::from_u32(0x1b).unwrap();
+    /// let result = color::make_color_from_num(1);
+    /// assert_eq!(result.plain_sequence, "128;0;0");
+    /// assert_eq!(result.plain_sequence_enclosed, "\"128;0;0\"");
+    /// assert_eq!(result.vt_sequence_foreground, format!("{escape}[38;2;128;0;0m"));
+    /// assert_eq!(result.vt_sequence_background, format!("{escape}[48;2;128;0;0m"));
+    /// assert_eq!(result.r, 128);
+    /// assert_eq!(result.g, 0);
+    /// assert_eq!(result.b, 0);
+    /// assert_eq!(result.hex, "#800000");
+    /// assert_eq!(result.color_type, color::ColorType::Color16);
+    /// ```
     pub fn make_color_from_num(num: u8) -> ColorFields {
         let specifier = format!("{}", num);
         return make_color_from_specifier(specifier);
     }
 
+    /// Initializes a color structure from the given color specifier either in the format of
+    /// "[R];[G];[B]", "#RRGGBB", or "[ColorNumber]".
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use colorseq::instances::color::*;
+    /// let escape: char = char::from_u32(0x1b).unwrap();
+    /// let result = color::make_color_from_specifier(String::from("#4080FF"));
+    /// assert_eq!(result.plain_sequence, "64;128;255");
+    /// assert_eq!(result.plain_sequence_enclosed, "\"64;128;255\"");
+    /// assert_eq!(result.vt_sequence_foreground, format!("{escape}[38;2;64;128;255m"));
+    /// assert_eq!(result.vt_sequence_background, format!("{escape}[48;2;64;128;255m"));
+    /// assert_eq!(result.r, 64);
+    /// assert_eq!(result.g, 128);
+    /// assert_eq!(result.b, 255);
+    /// assert_eq!(result.hex, "#4080FF");
+    /// assert_eq!(result.color_type, color::ColorType::ColorTrue);
+    /// ```
     pub fn make_color_from_specifier(specifier: String) -> ColorFields {
         // Some essential variables to install to the struct
         let mut plain_seq          = String::new();

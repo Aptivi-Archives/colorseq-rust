@@ -1,17 +1,39 @@
+//! Colors Info
+//!
+//! This module allows you to directly get information from the console color number from 0 to 255.
 pub mod colors_info {
     use serde_json::Value;
 
+    /// Color information
     pub struct ColorInfo {
+        /// Color ID. It stores the console color number.
         pub color_id: u8,
+        /// Color RGB information
         pub rgb     : ColorRgbInfo,
     }
 
+    /// Color RGB information
     pub struct ColorRgbInfo {
+        /// The red color level
         pub r: u8,
+        /// The green color level
         pub g: u8,
+        /// The blue color level
         pub b: u8,
     }
 
+    /// Gets the color information from a specified color number
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use colorseq::instances::colors_info::colors_info::*;
+    /// let spec_info: ColorInfo = get_color_info(45);
+    /// assert_eq!(spec_info.rgb.r, 0);
+    /// assert_eq!(spec_info.rgb.g, 215);
+    /// assert_eq!(spec_info.rgb.b, 255);
+    /// assert_eq!(spec_info.color_id, 45);
+    /// ```
     pub fn get_color_info(num: u8) -> ColorInfo {
         // Get the parsed JSON info
         let color_data_json = include_str!("../resources/colors_data.json");
