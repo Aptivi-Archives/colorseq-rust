@@ -1,7 +1,7 @@
 [package]
 name = "colorseq"
 license = "MIT"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "A library that manages the VT color sequences."
 homepage = "https://aptivi.github.io/"

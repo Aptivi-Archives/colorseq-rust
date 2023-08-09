@@ -1,4 +1,4 @@
-name: NuGet Gallery Push
+name: Cargo Push
 
 on:
   release:
